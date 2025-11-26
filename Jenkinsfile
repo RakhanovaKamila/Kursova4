@@ -7,6 +7,23 @@ pipeline {
             }
         }
         
+        stage('Restore NuGet Packages') {
+            steps {
+                script {
+                    // Check if nuget.exe exists, if not download it
+                    def nugetExists = fileExists('nuget.exe')
+                    if (!nugetExists) {
+                        echo 'Downloading nuget.exe...'
+                        powershell '''
+                            Invoke-WebRequest -Uri "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe" -OutFile "nuget.exe"
+                        '''
+                    }
+                    // Restore packages
+                    bat 'nuget.exe restore test_repos.sln'
+                }
+            }
+        }
+        
         stage('Build') {
             steps {
                 // Build the project using the discovered MSBuild path
