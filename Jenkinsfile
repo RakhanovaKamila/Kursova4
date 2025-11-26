@@ -9,25 +9,14 @@ pipeline {
         
         stage('Build') {
             steps {
-                script {
-                    def vsWherePath = '"C:\\Program Files (x86)\\Microsoft Visual Studio\\Installer\\vswhere.exe"'
-                    
-                    def vsPath = bat(
-                        script: "${vsWherePath} -latest -property installationPath",
-                        returnStdout: true
-                    ).trim()
-                    
-                    echo "Visual Studio found at: ${vsPath}"
-                    
-                    def msbuildPath = "\"${vsPath}\\MSBuild\\Current\\Bin\\MSBuild.exe\""
-                    
-                    bat "${msbuildPath} test_repos.sln /t:Build /p:Configuration=Release /p:Platform=x64"
-                }
+                // Build the project using the discovered MSBuild path
+                bat '"C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\MSBuild\\Current\\Bin\\MSBuild.exe" test_repos.sln /t:Build /p:Configuration=Release /p:Platform=x64'
             }
         }
         
         stage('Test') {
             steps {
+                // Run Google Test executable and generate XML report
                 bat "x64\\Release\\test_repos.exe --gtest_output=xml:test_report.xml"
             }
         }
@@ -35,6 +24,7 @@ pipeline {
     
     post {
         always {
+            // Publish test results using JUnit plugin
             junit allowEmptyResults: true, testResults: 'test_report.xml'
         }
         success {
