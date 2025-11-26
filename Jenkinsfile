@@ -18,8 +18,12 @@ pipeline {
                             Invoke-WebRequest -Uri "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe" -OutFile "nuget.exe"
                         '''
                     }
-                    // Restore packages
-                    bat 'nuget.exe restore test_repos.sln'
+                    // Force reinstall packages to ensure library files are present
+                    bat 'nuget.exe restore test_repos.sln -Force'
+                    
+                    // Verify the library files exist
+                    echo 'Checking for Google Test libraries...'
+                    bat 'dir packages\\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.1.7\\lib\\native\\v140\\windesktop\\msvcstl\\static\\rt-dyn\\x64\\Release\\ /b'
                 }
             }
         }
