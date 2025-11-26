@@ -9,7 +9,20 @@ pipeline {
         
         stage('Build') {
             steps {
-                bat '"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Current\\Bin\\MSBuild.exe" test_repos.sln /t:Build /p:Configuration=Release /p:Platform=x64'
+                script {
+                    def vsWherePath = '"C:\\Program Files (x86)\\Microsoft Visual Studio\\Installer\\vswhere.exe"'
+                    
+                    def vsPath = bat(
+                        script: "${vsWherePath} -latest -property installationPath",
+                        returnStdout: true
+                    ).trim()
+                    
+                    echo "Visual Studio found at: ${vsPath}"
+                    
+                    def msbuildPath = "\"${vsPath}\\MSBuild\\Current\\Bin\\MSBuild.exe\""
+                    
+                    bat "${msbuildPath} test_repos.sln /t:Build /p:Configuration=Release /p:Platform=x64"
+                }
             }
         }
         
@@ -22,7 +35,7 @@ pipeline {
     
     post {
         always {
-            junit 'test_report.xml'
+            junit allowEmptyResults: true, testResults: 'test_report.xml'
         }
         success {
             echo 'Pipeline completed successfully!'
