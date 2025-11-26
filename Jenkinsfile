@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        NUGET_PATH = 'C:\Users\user\Tools\nuget.exe'
-        MSBUILD_PATH = 'C:\Program Files\Microsoft Visual Studio\18\Community\MSBuild\Current\Bin\MSBuild.exe'
+        NUGET_PATH = 'C:\\Users\\user\\Tools\\nuget.exe'
+        MSBUILD_PATH = 'C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\MSBuild\\Current\\Bin\\MSBuild.exe'
     }
 
     stages {
@@ -27,7 +27,7 @@ pipeline {
 
         stage('Test') {
             steps {
-                bat 'x64\Release\test_repos.exe --gtest_output=xml:test_report.xml'
+                bat 'x64\\Release\\test_repos.exe --gtest_output=xml:test_report.xml'
             }
         }
     }
